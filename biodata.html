@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bio-data</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<header>
+<h1 class="title">Bio-data</h1>
+</header>
+<div style="text-align:center; margin-top:10px;">
+    <button id="changeColorBtn">Change Theme</button>
+</div>
+<nav>
+    <a href="index.html">Home</a>
+    <a href="resume.html">Resume</a>
+    <a href="biodata.html">Bio-data</a>
+</nav>
+<div id="biodata-box">
+    <h2>Loading Bio-data...</h2>
+</div>
+<script src="js/biodata.js"></script>
+<script>
+function renderBiodata(data){
+    const box = document.getElementById('biodata-box');
+    if(!box) return;
+    if(!data){
+        box.innerHTML = '<p style="color:#b00; text-align:center">Bio-data not available.</p>';
+        return;
+    }
+    const html = `
+        <table>
+            <tr><th>Field</th><th>Details</th></tr>
+            <tr><td>Name</td><td>${data.name || ''}</td></tr>
+            <tr><td>DOB</td><td>${data.dob || ''}</td></tr>
+            <tr><td>Gender</td><td>${data.gender || ''}</td></tr>
+            <tr><td>Nationality</td><td>${data.nationality || ''}</td></tr>
+            <tr><td>Father</td><td>${data.father || ''}</td></tr>
+            <tr><td>Mother</td><td>${data.mother || ''}</td></tr>
+        </table>
+    `;
+    box.innerHTML = html;
+}
+
+// Prefer embedded `window.biodata` (works with file://). If not present, try AJAX/fetch.
+if(window.biodata){
+    renderBiodata(window.biodata);
+} else if(window.jQuery){
+    $.getJSON('data/biodata.json')
+        .done(function(data){ renderBiodata(data); })
+        .fail(function(){ renderBiodata(null); });
+} else if(window.fetch){
+    fetch('data/biodata.json')
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(renderBiodata)
+        .catch(() => renderBiodata(null));
+} else {
+    renderBiodata(null);
+}
+</script>
+<script src="js/script.js"></script>
+</body>
+</html>
